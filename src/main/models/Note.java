@@ -1,25 +1,27 @@
 package main.models;
 
 public class Note {
-    private final int duration;
-    private final Pitch pitch;
-    private final Alter alter;
+    private int duration;
+    private Pitch pitch;
 
-    public Note(int duration, Pitch pitch, Alter alter) {
-        this.duration = duration;
-        this.pitch = pitch;
-        this.alter = alter;
+    private Note() {
     }
 
-    public int getDuration() {
-        return duration;
-    }
+    public static class Builder {
+        private Note building = new Note();
 
-    public Pitch getPitch() {
-        return pitch;
-    }
+        public Builder duration(int value) {
+            building.duration = value;
+            return this;
+        }
 
-    public Alter getAlter() {
-        return alter;
+        public Builder pitch(Pitch value) {
+            building.pitch = value;
+            return this;
+        }
+
+        public Note build() {
+            return building;
+        }
     }
 }

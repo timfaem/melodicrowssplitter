@@ -13,7 +13,7 @@ public enum Alter {
         this.alter = alterType;
     }
 
-    public static Alter getAlterByInt(int alterType)
+    public static Alter fromInt(int alterType)
     {
         return alterType==-1?FLAT:alterType==1?SHARP:NONE;
     }

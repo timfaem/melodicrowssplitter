@@ -2,19 +2,33 @@ package main.models;
 
 public class Pitch {
 
-    private final Step step;
-    private final int octave;
+    private Alter alter = Alter.NONE;
+    private Step step;
+    private int octave;
 
-    public Pitch(Step step, int octave) {
-        this.step = step;
-        this.octave = octave;
+    private Pitch() {
     }
 
-    public Step getStep() {
-        return step;
-    }
+    public static class Builder {
+        private Pitch building = new Pitch();
 
-    public int getOctave() {
-        return octave;
+        public Builder step(Step value) {
+            building.step = value;
+            return this;
+        }
+
+        public Builder octave(int value) {
+            building.octave = value;
+            return this;
+        }
+
+        public Builder alter(Alter value) {
+            building.alter = value;
+            return this;
+        }
+
+        public Pitch build() {
+            return building;
+        }
     }
 }
