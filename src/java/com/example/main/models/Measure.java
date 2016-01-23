@@ -1,4 +1,4 @@
-package main.models;
+package com.example.main.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,13 @@ public class Measure {
     private List<Note> notes = new ArrayList<>();
 
     private Measure() {
+    }
+
+    @Override
+    public String toString() {
+        return "Measure{" +
+                "notes=" + notes +
+                '}';
     }
 
     public static class Builder {

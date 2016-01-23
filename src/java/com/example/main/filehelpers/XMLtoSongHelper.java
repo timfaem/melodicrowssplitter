@@ -1,6 +1,6 @@
-package main.files;
+package com.example.main.filehelpers;
 
-import main.models.Song;
+import com.example.main.models.Song;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -23,7 +23,6 @@ public class XMLtoSongHelper {
             } else {
                 location = split[1];
             }
-
 //            System.out.println("Melodic rows: " + split[2].substring(0, split[2].length() - 1) + "\nyear: " + year + "\nlocation: " + location);
         }
 

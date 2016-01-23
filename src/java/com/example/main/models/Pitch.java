@@ -1,4 +1,4 @@
-package main.models;
+package com.example.main.models;
 
 public class Pitch {
 
@@ -7,6 +7,15 @@ public class Pitch {
     private int octave;
 
     private Pitch() {
+    }
+
+    @Override
+    public String toString() {
+        return "Pitch{" +
+                "alter=" + alter +
+                ", step=" + step +
+                ", octave=" + octave +
+                '}';
     }
 
     public static class Builder {

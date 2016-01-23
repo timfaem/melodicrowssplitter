@@ -1,10 +1,11 @@
-package main.models;
+package com.example.main.models;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Song {
 
+    private String author;
     private String title;
     private int year;
     private Location location;
@@ -15,9 +16,27 @@ public class Song {
     private Song() {
     }
 
+    @Override
+    public String toString() {
+        return "Song{" + "\n" +
+                "title='" + title + "\n" +
+                ", year=" + year + "\n" +
+                ", location=" + location.toString() + "\n" +
+                ", melodicRows='" + melodicRows + "\n" +
+                ", genre=" + genre + "\n" +
+                ", author=" + author + "\n" +
+                ", measures=" + measures +
+                '}';
+    }
+
     public static class Builder {
 
         private Song building = new Song();
+
+        public Builder author(String value) {
+            building.author = value;
+            return this;
+        }
 
         public Builder title(String value) {
             building.title = value;
@@ -34,14 +53,12 @@ public class Song {
             return this;
         }
 
-        public Builder melodicRows(String value)
-        {
+        public Builder melodicRows(String value) {
             building.melodicRows = value;
             return this;
         }
 
-        public Builder addMeasure(Measure value)
-        {
+        public Builder addMeasure(Measure value) {
             building.measures.add(value);
             return this;
         }

@@ -1,6 +1,6 @@
-package test;
+package com.example.main.filehelpers;
 
-import main.files.SongFileReader;
+import com.example.main.filehelpers.SongFileReader;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -12,6 +12,11 @@ public class XMLtoSongHelperTest {
     public void test() throws IOException, SAXException {
         String path = System.getProperty("user.dir") + "\\input\\test";
         SongFileReader sfReader = new SongFileReader(path);
-        sfReader.readSongs(path);
+        while (sfReader.hasNext())
+        {
+            sfReader.advance();
+            String fileText = sfReader.getFileText();
+            System.out.println(fileText);
+        }
     }
 }

@@ -1,10 +1,18 @@
-package main.models;
+package com.example.main.models;
 
 public class Note {
     private int duration;
     private Pitch pitch;
 
     private Note() {
+    }
+
+    @Override
+    public String toString() {
+        return "Note{" +
+                "duration=" + duration +
+                ", pitch=" + pitch +
+                '}';
     }
 
     public static class Builder {

@@ -1,4 +1,4 @@
-package main.models;
+package com.example.main.models;
 
 public enum Alter {
 
