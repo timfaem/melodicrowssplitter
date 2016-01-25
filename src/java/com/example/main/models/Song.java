@@ -21,7 +21,7 @@ public class Song {
         return "Song{" + "\n" +
                 "title='" + title + "\n" +
                 ", year=" + year + "\n" +
-                ", location=" + location.toString() + "\n" +
+                ", location=" + location + "\n" +
                 ", melodicRows='" + melodicRows + "\n" +
                 ", genre=" + genre + "\n" +
                 ", author=" + author + "\n" +

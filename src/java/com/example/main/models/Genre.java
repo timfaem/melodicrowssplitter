@@ -11,6 +11,7 @@ public enum Genre {
     CATANIE("Cat"),
     COLINDA("Col"),
     C_PROP_ZIS("Cpr"),
+    DOINA("Doi"),
     MIORITA("Mio");
 
     private String abbrev;
@@ -23,6 +24,7 @@ public enum Genre {
         map.put(CATANIE.abbrev, CATANIE);
         map.put(COLINDA.abbrev, COLINDA);
         map.put(C_PROP_ZIS.abbrev, C_PROP_ZIS);
+        map.put(DOINA.abbrev, DOINA);
         map.put(MIORITA.abbrev, MIORITA);
     }
 
