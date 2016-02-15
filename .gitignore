@@ -1,6 +1,7 @@
 *.iml
 src/META-INF/*
 /output
+.idea/libraries
 
 .idea/
 

@@ -16,9 +16,9 @@ public class Main {
     }
 
     public Main() {
-        String path = System.getProperty("user.dir") + "\\input\\all";
+        String path = System.getProperty("user.dir") + "\\input\\test";
         SongFileReader sfReader = new SongFileReader(path);
-
+        int ignored = 0;
         List<Song> songs = new ArrayList<>();
         while (sfReader.hasNext()) {
             sfReader.advance();
@@ -28,11 +28,12 @@ public class Main {
                     Song s = XMLtoSong.toSong(xmlString, sfReader.getFileTitle());
                     songs.add(s);
                 } catch (JSONException ex) {
-                    System.out.printf("EXCEPTION");
-                    break;
+//                    System.out.println(ex + xmlString);
+                    ignored++;
+                    continue;
                 }
-//                System.out.println(s);
             }
         }
+        System.out.println("Number of ignored files: " + ignored);
     }
 }
