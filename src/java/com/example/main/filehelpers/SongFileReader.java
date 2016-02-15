@@ -9,9 +9,7 @@ import java.util.List;
 public class SongFileReader {
 
     private String inputFolderPath;
-
     private List<String> songPaths = new ArrayList<>();
-
     private int currentIndex = -1;
 
     public SongFileReader(String inputFolderPath) {
@@ -39,8 +37,8 @@ public class SongFileReader {
         return currentIndex < songPaths.size() - 1;
     }
 
-    private List<String> getSongPaths() {
-        return songPaths;
+    public String getFileTitle() {
+        return songPaths.get(currentIndex);
     }
 
     private String readFileText(String songFilePath) throws IOException {

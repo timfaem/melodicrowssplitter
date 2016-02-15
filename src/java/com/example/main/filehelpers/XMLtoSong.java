@@ -2,27 +2,24 @@ package com.example.main.filehelpers;
 
 import com.example.main.models.*;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
 public class XMLtoSong {
 
-    public static Song toSong(String xmlString) {
+    public static Song toSong(String xmlString, String fileName) {
 
         JSONObject jsonObj = XML.toJSONObject(xmlString);
-
-//        String jsonString = jsonObj.toString(4);
-//        System.out.println(jsonString);
 
         JSONObject scorePartwiseJSON = jsonObj.getJSONObject("score-partwise");
 
         String creator = scorePartwiseJSON.getJSONObject("identification").getJSONObject("creator").getString("content");
-        String[] split = creator.split("\n");
+        String[] split = creator.split("\r\n");
         String title = split[0];
         String[] authorGenreNo = split[0].split(" ");
         String author = authorGenreNo[0].substring(0, authorGenreNo[0].length() - 1);
         Genre genre = Genre.fromString(authorGenreNo[1].substring(0, authorGenreNo[1].length() - 1));
-
 
 
         String y = split[1].substring(0, 4);
@@ -30,12 +27,20 @@ public class XMLtoSong {
         String location;
         if (y.matches("\\b\\d{4}\\b")) {
             year = Integer.parseInt(y);
-            location = split[1].substring(6);
+            location = split[1].substring(6).replace(". \r", "");
         } else {
-            location = split[1];
+            location = split[1].trim().replace(". \r", "");
         }
 
-        JSONArray measuresJSON = scorePartwiseJSON.getJSONObject("part").getJSONArray("measure");
+        JSONArray measuresJSON = null;
+        try {
+            measuresJSON = scorePartwiseJSON.getJSONObject("part").getJSONArray("measure");
+        } catch (JSONException ex) {
+            System.out.println("Exception at: " + fileName);
+//            measuresJSON.put(0, scorePartwiseJSON.getJSONObject("part").getJSONObject("measure"));
+//            return new Song.Builder().build();
+//            measuresJSON = new JSONArray(scorePartwiseJSON.getJSONObject("part").getJSONObject("measure"));
+        }
 
         Song.Builder song = new Song.Builder()
                 .author(author)
