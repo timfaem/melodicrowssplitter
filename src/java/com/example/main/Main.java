@@ -28,7 +28,6 @@ public class Main {
                     Song s = XMLtoSong.toSong(xmlString, sfReader.getFileTitle());
                     songs.add(s);
                 } catch (JSONException ex) {
-//                    System.out.println(ex + xmlString);
                     ignored++;
                     continue;
                 }
