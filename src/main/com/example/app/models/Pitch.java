@@ -40,4 +40,12 @@ public class Pitch {
             return building;
         }
     }
+
+    public Alter getAlter() {
+        return alter;
+    }
+
+    public Step getStep() {
+        return step;
+    }
 }
