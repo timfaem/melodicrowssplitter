@@ -3,6 +3,7 @@ package com.example.app;
 import com.example.app.filehelpers.SongFileReader;
 import com.example.app.filehelpers.XMLtoSong;
 import com.example.app.models.Song;
+import com.example.app.models.helpers.SongHelper;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -23,16 +24,22 @@ public class Main {
         while (sfReader.hasNext()) {
             sfReader.advance();
             String xmlString = sfReader.getFileText();
-            if (xmlString != null) {
-                try {
-                    Song s = XMLtoSong.toSong(xmlString, sfReader.getFileTitle());
-                    songs.add(s);
-                } catch (JSONException ex) {
-                    ignored++;
-                    continue;
-                }
+            if (xmlString == null) {
+                continue;
+            }
+
+            try {
+                Song s = XMLtoSong.toSong(xmlString, sfReader.getFileTitle());
+                songs.add(s);
+            } catch (JSONException ex) {
+                ignored++;
+                continue;
             }
         }
         System.out.println("Number of ignored files: " + ignored);
+
+        System.out.println("Title           Year");
+        SongHelper.sortByYear(songs);
+        songs.forEach(s -> System.out.println(s.getTitle() + "     " + s.getYear()));
     }
 }
