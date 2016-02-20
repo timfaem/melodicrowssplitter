@@ -10,7 +10,7 @@ public class XMLtoSongHelperTest {
     @Test
     public void test() throws IOException, SAXException {
         String path = System.getProperty("user.dir") + "\\input\\test";
-        SongFileReader sfReader = new SongFileReader(path);
+        FileReader sfReader = new FileReader(path);
         while (sfReader.hasNext())
         {
             sfReader.advance();

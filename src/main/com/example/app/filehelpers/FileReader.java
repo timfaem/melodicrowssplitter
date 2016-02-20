@@ -6,13 +6,13 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongFileReader {
+public class FileReader {
 
     private String inputFolderPath;
     private List<String> songPaths = new ArrayList<>();
     private int currentIndex = -1;
 
-    public SongFileReader(String inputFolderPath) {
+    public FileReader(String inputFolderPath) {
         this.inputFolderPath = inputFolderPath;
         this.songPaths = getFilePaths(inputFolderPath);
     }
