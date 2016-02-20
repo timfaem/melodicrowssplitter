@@ -6,6 +6,7 @@ import java.util.List;
 public class Song {
 
     private String author;
+
     private String title;
     private int year;
     private Location location;
@@ -77,5 +78,33 @@ public class Song {
             return building;
         }
 
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public String getMelodicRows() {
+        return melodicRows;
+    }
+
+    public List<Measure> getMeasures() {
+        return measures;
+    }
+
+    public Genre getGenre() {
+        return genre;
     }
 }

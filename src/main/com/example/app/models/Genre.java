@@ -57,4 +57,9 @@ public enum Genre {
     Genre(String abbrev) {
         this.abbrev = abbrev;
     }
+
+    public String getAbbrev() {
+        return abbrev;
+    }
+
 }
