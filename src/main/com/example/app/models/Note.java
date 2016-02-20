@@ -32,4 +32,12 @@ public class Note {
             return building;
         }
     }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public Pitch getPitch() {
+        return pitch;
+    }
 }

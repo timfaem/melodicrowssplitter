@@ -33,8 +33,9 @@ public class Measure {
         public Measure build() {
             return building;
         }
-
     }
 
-
+    public List<Note> getNotes() {
+        return notes;
+    }
 }
