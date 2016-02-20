@@ -21,7 +21,7 @@ public class TextToSongHelper {
             try {
                 Song s = XMLtoSong.toSong(xmlString, sfReader.getFileTitle());
                 songs.add(s);
-            } catch (JSONException ex) {
+            } catch (Exception ex) {
                 ignored++;
                 continue;
             }
