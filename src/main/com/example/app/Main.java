@@ -2,15 +2,12 @@ package com.example.app;
 
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
-import com.example.app.filehelpers.XMLtoSong;
 import com.example.app.models.NormalizedStep;
 import com.example.app.models.Note;
 import com.example.app.models.Song;
 import com.example.app.models.filters.FirstNoteExtractor;
 import com.example.app.models.helpers.SongHelper;
-import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +31,7 @@ public class Main {
 
         System.out.println("\n\n\n\n");
         Map<NormalizedStep, AtomicInteger> histogram = new HashMap<>();
-        for (NormalizedStep s: NormalizedStep.values())
-        {
+        for (NormalizedStep s : NormalizedStep.values()) {
             histogram.put(s, new AtomicInteger(0));
         }
 
@@ -45,10 +41,22 @@ public class Main {
             histogram.get(nStep).incrementAndGet();
         });
 
-        for (Map.Entry entry : histogram.entrySet())
-        {
-            System.out.println(entry.getKey() + "        " + entry.getValue());
+        for (Map.Entry<NormalizedStep, AtomicInteger> entry : histogram.entrySet()) {
+            System.out.println(
+                    entry.getKey().toString().length() > 5 ?
+                            entry.getKey() + "   " + prettyPrint(entry.getValue()) :
+                            entry.getKey() + "        " + prettyPrint(entry.getValue()));
+
         }
+    }
+
+    private String prettyPrint(AtomicInteger value) {
+        int charactedToPrint = value.intValue() / 50;
+        StringBuilder sbuier = new StringBuilder();
+        for (int i = 0; i < charactedToPrint; i++) {
+            sbuier.append("**");
+        }
+        return sbuier.toString();
     }
 
 }
