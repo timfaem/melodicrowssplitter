@@ -1,6 +1,6 @@
-package com.example.main.filehelpers;
+package com.example.app.filehelpers;
 
-import com.example.main.models.*;
+import com.example.app.models.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

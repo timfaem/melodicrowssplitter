@@ -1,8 +1,8 @@
-package com.example.main;
+package com.example.app;
 
-import com.example.main.filehelpers.SongFileReader;
-import com.example.main.filehelpers.XMLtoSong;
-import com.example.main.models.Song;
+import com.example.app.filehelpers.SongFileReader;
+import com.example.app.filehelpers.XMLtoSong;
+import com.example.app.models.Song;
 import org.json.JSONException;
 
 import java.util.ArrayList;

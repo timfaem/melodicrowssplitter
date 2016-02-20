@@ -1,4 +1,4 @@
-package com.example.main.filehelpers;
+package com.example.app.filehelpers;
 
 import org.junit.Test;
 import org.xml.sax.SAXException;

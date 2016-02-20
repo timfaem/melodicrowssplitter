@@ -15,6 +15,10 @@ gradle-app.setting
 .gradletasknamecache
 
 *.iml
+src/META-INF/*
+/output
+.idea/libraries
+/build
 
 ## Directory-based project format:
 .idea/

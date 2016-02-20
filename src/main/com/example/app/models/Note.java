@@ -1,4 +1,4 @@
-package com.example.main.models;
+package com.example.app.models;
 
 public class Note {
     private int duration;

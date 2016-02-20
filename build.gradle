@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile 'org.jdom:jdom2:2.0.6'
+    compile 'org.json:json:20151123'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+}
+
+sourceSets.main.java.srcDirs = ['src/main']
+mainClassName = 'com.example.app.Main'
