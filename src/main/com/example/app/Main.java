@@ -2,57 +2,74 @@ package com.example.app;
 
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
-import com.example.app.filters.GenrePredicate;
-import com.example.app.models.*;
+import com.example.app.models.Genre;
+import com.example.app.models.Note;
+import com.example.app.models.Song;
+import com.example.app.models.Step;
 import com.example.app.models.filters.FirstNoteExtractor;
 import com.example.app.models.helpers.SongHelper;
-import org.json.JSONObject;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.ApplicationFrame;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 
 public class Main {
+
+    private static final String PATH_ALL = System.getProperty("user.dir") + "\\input\\all";
+    private static final String PATH_TEST = System.getProperty("user.dir") + "\\input\\test";
 
     public static void main(String[] args) {
         new Main();
     }
 
     public Main() {
-        String path = System.getProperty("user.dir") + "\\input\\all";
-        List<Song> songs = TextToSongHelper.getSongs(new FileReader(path));
+        List<Song> songs = TextToSongHelper.getSongs(new FileReader(PATH_ALL));
 
-//        System.out.println("Title           Year");
-//        SongHelper.sortByYear(songs);
-//        List<Song> knownYearSongs = SongHelper.trimNonYear(songs);
-//        knownYearSongs.forEach(s -> {
-//            try {
-//                Thread.sleep(10);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            System.out.println(s.getTitle() + "     " + s.getYear() + "    " + s.getLocation());
-//        });
+//        SongHelper.filterSongsByGenre(songs, Genre.BOCET);
 
-        
+        drawFirstNoteHistogram(songs);
 
-        GenrePredicate predicate = new GenrePredicate(Genre.C_PROP_ZIS);
-        List<Song> filteredSongs = SongHelper.trimNonYear(SongHelper.sortByYear(SongHelper.filterSongs(songs, predicate)));
-        filteredSongs.forEach( s -> System.out.println(s.getTitle() + "     " + s.getYear() + "    " + s.getGenre()));
-
-//        printHistogram(createHistogram(songs));
-//        whatever(songs);
     }
 
-    private void printHistogram(Map<Step, AtomicInteger> histogram) {
-        for (Map.Entry<Step, AtomicInteger> entry : histogram.entrySet()) {
-            System.out.println(entry.getKey() + "  " + prettyPrint(entry.getValue()));
+    private void drawFirstNoteHistogram(List<Song> songs)
+    {
+        drawHistogram(createDataset(songs));
+    }
+
+    private void drawHistogram(CategoryDataset dataset, String title)
+    {
+        JFreeChart barChart = ChartFactory.createBarChart("", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
+        barChart.setAntiAlias(true);
+        ChartPanel chartPanel = new ChartPanel(barChart);
+        chartPanel.setPreferredSize(new Dimension(200, 150));
+        ApplicationFrame frame = new ApplicationFrame(title);
+        frame.setContentPane(chartPanel);
+        frame.setSize(new Dimension(400, 400));
+        frame.setVisible(true);
+    }
+
+    private void drawHistogram(CategoryDataset dataset) {
+        drawHistogram(dataset, "");
+    }
+
+    private CategoryDataset createDataset(List<Song> songs) {
+        Map<Step, AtomicInteger> histogram = new TreeMap<>(createHistogram(songs));
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for (Map.Entry entry : histogram.entrySet()) {
+            dataset.addValue(((AtomicInteger) entry.getValue()).doubleValue(), entry.getKey().toString(), entry.getKey().toString());
         }
+        return dataset;
     }
 
     private Map<Step, AtomicInteger> createHistogram(List<Song> songs) {
@@ -67,29 +84,4 @@ public class Main {
         });
         return histogram;
     }
-
-    private void whatever(List<Song> songs) {
-        Song first = songs.get(0);
-        System.out.println(first.toString());
-        JSONObject firstJson = new JSONObject(first);
-        System.out.println(firstJson);
-
-        try {
-            FileWriter writer = new FileWriter("song_json_test.txt");
-            writer.write(String.valueOf(firstJson));
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String prettyPrint(AtomicInteger value) {
-        int charactedToPrint = value.intValue() / 50;
-        StringBuilder sbuilder = new StringBuilder();
-        for (int i = 0; i < charactedToPrint; i++) {
-            sbuilder.append("**");
-        }
-        return sbuilder.toString();
-    }
-
 }

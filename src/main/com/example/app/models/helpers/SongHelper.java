@@ -1,5 +1,7 @@
 package com.example.app.models.helpers;
 
+import com.example.app.filters.GenrePredicate;
+import com.example.app.models.Genre;
 import com.example.app.models.Song;
 import com.example.app.models.comparator.ByGenreComparator;
 import com.example.app.models.comparator.ByTitleComparator;
@@ -47,5 +49,9 @@ public final class SongHelper {
             }
         });
         return filtered;
+    }
+
+    public static List<Song> filterSongsByGenre(List<Song> songs, Genre genre) {
+        return filterSongs(songs, new GenrePredicate(genre));
     }
 }
