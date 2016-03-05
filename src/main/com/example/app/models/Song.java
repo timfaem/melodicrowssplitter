@@ -80,6 +80,14 @@ public class Song {
 
     }
 
+    public List<Note> flattenSong() {
+        List<Note> all = new ArrayList<>();
+        for (Measure m : getMeasures()) {
+            all.addAll(m.getNotes());
+        }
+        return all;
+    }
+
     public String getAuthor() {
         return author;
     }

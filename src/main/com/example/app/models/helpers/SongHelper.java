@@ -54,4 +54,5 @@ public final class SongHelper {
     public static List<Song> filterSongsByGenre(List<Song> songs, Genre genre) {
         return filterSongs(songs, new GenrePredicate(genre));
     }
+
 }

@@ -2,12 +2,13 @@ package com.example.app;
 
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
-import com.example.app.models.Genre;
 import com.example.app.models.Note;
 import com.example.app.models.Song;
 import com.example.app.models.Step;
+import com.example.app.models.filters.FirstMelodicRowExtractor;
 import com.example.app.models.filters.FirstNoteExtractor;
-import com.example.app.models.helpers.SongHelper;
+import com.example.app.models.filters.LastNoteExtractor;
+import com.example.app.models.filters.MusicalFeatureExtractor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -38,13 +39,8 @@ public class Main {
 
 //        SongHelper.filterSongsByGenre(songs, Genre.BOCET);
 
-        drawFirstNoteHistogram(songs);
-
-    }
-
-    private void drawFirstNoteHistogram(List<Song> songs)
-    {
-        drawHistogram(createDataset(songs));
+        drawHistogram(createFirstNoteDataset(createHistogram(songs, new FirstNoteExtractor())), "First Note");
+        drawHistogram(createFirstNoteDataset(createHistogram(songs, new LastNoteExtractor())), "Last note of First Melodic row");
     }
 
     private void drawHistogram(CategoryDataset dataset, String title)
@@ -63,8 +59,8 @@ public class Main {
         drawHistogram(dataset, "");
     }
 
-    private CategoryDataset createDataset(List<Song> songs) {
-        Map<Step, AtomicInteger> histogram = new TreeMap<>(createHistogram(songs));
+    private CategoryDataset createFirstNoteDataset(Map<Step, AtomicInteger> histogramData) {
+        Map<Step, AtomicInteger> histogram = new TreeMap<>(histogramData);
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (Map.Entry entry : histogram.entrySet()) {
             dataset.addValue(((AtomicInteger) entry.getValue()).doubleValue(), entry.getKey().toString(), entry.getKey().toString());
@@ -72,14 +68,14 @@ public class Main {
         return dataset;
     }
 
-    private Map<Step, AtomicInteger> createHistogram(List<Song> songs) {
+    private Map<Step, AtomicInteger> createHistogram(List<Song> songs, MusicalFeatureExtractor<Note> extractor) {
         Map<Step, AtomicInteger> histogram = new HashMap<>();
         for (Step s : Step.values()) {
             histogram.put(s, new AtomicInteger(0));
         }
 
         songs.forEach(s -> {
-            Note n = new FirstNoteExtractor().extract(s);
+            Note n = extractor.extract(s);
             histogram.get(n.getPitch().getStep()).incrementAndGet();
         });
         return histogram;
