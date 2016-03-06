@@ -12,6 +12,7 @@ public class FileReader {
     private List<String> songPaths = new ArrayList<>();
     private int currentIndex = -1;
 
+
     public FileReader(String inputFolderPath) {
         this.inputFolderPath = inputFolderPath;
         this.songPaths = getFilePaths(inputFolderPath);
@@ -65,5 +66,10 @@ public class FileReader {
             }
         }
         return fileNames;
+    }
+
+    public int getTotalSongsNumber()
+    {
+        return songPaths.size();
     }
 }

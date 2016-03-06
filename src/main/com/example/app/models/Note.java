@@ -1,6 +1,6 @@
 package com.example.app.models;
 
-public class Note {
+public class Note implements Comparable<Note> {
     private int duration;
     private Pitch pitch;
 
@@ -13,6 +13,11 @@ public class Note {
                 "duration=" + duration +
                 ", pitch=" + pitch +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Note o) {
+        return pitch.compareTo(o.getPitch());
     }
 
     public static class Builder {
