@@ -19,6 +19,10 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.ApplicationFrame;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,18 +41,57 @@ public class Main {
     }
 
     public Main() {
-        List<Song> songs = TextToSongHelper.getSongs(new FileReader(PATH_EVERYONE));
+        List<Song> songs = TextToSongHelper.getSongs(new FileReader(PATH_ALL));
         System.out.println("Total songs processed: " + songs.size());
 
-//        SongHelper.filterSongsByGenre(songs, Genre.BOCET);
+////        SongHelper.filterSongsByGenre(songs, Genre.BOCET);
+//
+//        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new FirstNoteExtractor())), "First Note");
+//        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteExtractor())), "Last song note");
+//
+////        drawHistogram(createFirstNoteDataset(createHistogram(songs, new FirstNoteExtractor())), "First Note");
+//        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteFirstMelodicRowExtractor())), "Last note of First Melodic row");
 
-        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new FirstNoteExtractor())), "First Note");
-        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteExtractor())), "Last song note");
+        Map<String, Song> songMap = new HashMap<>();
+        for (Song s : songs) {
+            songMap.put(s.getTitle(), s);
+        }
 
-//        drawHistogram(createFirstNoteDataset(createHistogram(songs, new FirstNoteExtractor())), "First Note");
-        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteFirstMelodicRowExtractor())), "Last note of First Melodic row");
+        File file = new File(System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Note_.csv");
+        try {
+            BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
+            bRead.readLine(); //ignore column titles
+            String line = bRead.readLine();
+//            while ((line = bRead.readLine()) != null) {
+            String[] parts = line.split(",");
+            Integer count = Integer.parseInt(parts[0]);
+            String pattern = parts[1];
+            Map<Integer, Integer> yearToNumber = new HashMap<>();
+            for (int i = 2; i < count+2; i++) {
+                String title = parts[i];
 
-
+                if (title.startsWith("[")) {
+                    title = title.substring(1);
+                }
+                if (title.endsWith("]")){
+                    title = title.substring(0, title.length()-1);
+                }
+                if (title.startsWith(" "))
+                {
+                    title = title.substring(1);
+                }
+                title = title.replace(".txt", "");
+                Song song = songMap.get(title);
+                if (song != null) {
+                    yearToNumber.put(song.getYear(), yearToNumber.getOrDefault(song.getYear(), 0) + 1);
+                }
+            }
+//            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void drawHistogram(CategoryDataset dataset, String title) {
