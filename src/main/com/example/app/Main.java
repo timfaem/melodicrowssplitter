@@ -52,41 +52,57 @@ public class Main {
         File file = new File(System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Note_.csv");
         try {
             BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
-            bRead.readLine(); //ignore column titles
-            String line = bRead.readLine();
+            bRead.readLine();
+            String line = bRead.readLine(); //ignore column titles
 //            while ((line = bRead.readLine()) != null) {
-            String[] parts = line.split(",");
-            Integer count = Integer.parseInt(parts[0]);
-            String pattern = parts[1];
-            Map<Integer, Integer> yearToNumber = new HashMap<>();
+                String[] parts = line.split(",");
+                Integer count = Integer.parseInt(parts[0]);
+                String pattern = parts[1];
 
-            List<Integer> yearList = new ArrayList<>();
-            for (int i = 2; i < count + 2; i++) {
-                String title = parts[i];
+                List<Song> selectedSongs = new ArrayList<>();
+                for (int i = 2; i < count + 2; i++) {
+                    String title = parts[i];
 
-                if (title.startsWith("[")) {
-                    title = title.substring(1);
+                    if (title.startsWith("[")) {
+                        title = title.substring(1);
+                    }
+                    if (title.endsWith("]")) {
+                        title = title.substring(0, title.length() - 1);
+                    }
+                    if (title.startsWith(" ")) {
+                        title = title.substring(1);
+                    }
+                    title = title.replace("txt", "");
+                    Song song = songMap.get(title);
+                    if (song != null) {
+                        selectedSongs.add(song);
+                    }
                 }
-                if (title.endsWith("]")) {
-                    title = title.substring(0, title.length() - 1);
-                }
-                if (title.startsWith(" ")) {
-                    title = title.substring(1);
-                }
-                title = title.replace("txt", "");
-                Song song = songMap.get(title);
-                if (song != null) {
-                    yearToNumber.put(song.getYear(), yearToNumber.getOrDefault(song.getYear(), 0) + 1);
-                }
-            }
 
-            float avg = 0;
-            int sum = 0;
-            int total = yearToNumber.keySet().size();
-            for (Map.Entry entry : yearToNumber.entrySet()) {
-                System.out.println("Year: " + entry.getKey() + " songs: " + entry.getValue());
-                
-            }
+                int sum = 0;
+//                Double avg = selectedSongs.stream().mapToInt(Song::getYearInteger).average().getAsDouble();
+
+                int totalNoNullYearSongs = 0;
+                for (Song s : selectedSongs) {
+                    if (s.getYear() != 0) {
+                        totalNoNullYearSongs++;
+                        sum += s.getYear();
+                    }
+                }
+                Double avg = 0.0;
+                if (totalNoNullYearSongs != 0) {
+                    avg = Double.valueOf(sum / totalNoNullYearSongs);
+                }
+
+                Double varianceNumerator = 0.0;
+
+                for (Song s : selectedSongs) {
+                    varianceNumerator += Math.pow(s.getYear() - avg, 2);
+                }
+
+                System.out.println("Nr: " + totalNoNullYearSongs +
+                        " Pattern: " + pattern +
+                        " StdDev: " + (totalNoNullYearSongs != 0 ? Math.sqrt(varianceNumerator / totalNoNullYearSongs) : "No std dev"));
 //            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
