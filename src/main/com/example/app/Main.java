@@ -23,10 +23,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -41,7 +39,7 @@ public class Main {
     }
 
     public Main() {
-        List<Song> songs = TextToSongHelper.getSongs(new FileReader(PATH_ALL));
+        List<Song> songs = TextToSongHelper.getSongs(new FileReader(PATH_EVERYONE));
         System.out.println("Total songs processed: " + songs.size());
 
         //drawHistograms(songs);
@@ -61,24 +59,33 @@ public class Main {
             Integer count = Integer.parseInt(parts[0]);
             String pattern = parts[1];
             Map<Integer, Integer> yearToNumber = new HashMap<>();
-            for (int i = 2; i < count+2; i++) {
+
+            List<Integer> yearList = new ArrayList<>();
+            for (int i = 2; i < count + 2; i++) {
                 String title = parts[i];
 
                 if (title.startsWith("[")) {
                     title = title.substring(1);
                 }
-                if (title.endsWith("]")){
-                    title = title.substring(0, title.length()-1);
+                if (title.endsWith("]")) {
+                    title = title.substring(0, title.length() - 1);
                 }
-                if (title.startsWith(" "))
-                {
+                if (title.startsWith(" ")) {
                     title = title.substring(1);
                 }
-                title = title.replace(".txt", "");
+                title = title.replace("txt", "");
                 Song song = songMap.get(title);
                 if (song != null) {
                     yearToNumber.put(song.getYear(), yearToNumber.getOrDefault(song.getYear(), 0) + 1);
                 }
+            }
+
+            float avg = 0;
+            int sum = 0;
+            int total = yearToNumber.keySet().size();
+            for (Map.Entry entry : yearToNumber.entrySet()) {
+                System.out.println("Year: " + entry.getKey() + " songs: " + entry.getValue());
+                
             }
 //            }
         } catch (FileNotFoundException e) {
@@ -86,6 +93,8 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
     private void drawHistograms(List<Song> songs) {
