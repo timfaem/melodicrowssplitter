@@ -44,13 +44,7 @@ public class Main {
         List<Song> songs = TextToSongHelper.getSongs(new FileReader(PATH_ALL));
         System.out.println("Total songs processed: " + songs.size());
 
-////        SongHelper.filterSongsByGenre(songs, Genre.BOCET);
-//
-//        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new FirstNoteExtractor())), "First Note");
-//        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteExtractor())), "Last song note");
-//
-////        drawHistogram(createFirstNoteDataset(createHistogram(songs, new FirstNoteExtractor())), "First Note");
-//        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteFirstMelodicRowExtractor())), "Last note of First Melodic row");
+        //drawHistograms(songs);
 
         Map<String, Song> songMap = new HashMap<>();
         for (Song s : songs) {
@@ -92,6 +86,16 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void drawHistograms(List<Song> songs) {
+        //        SongHelper.filterSongsByGenre(songs, Genre.BOCET);
+
+        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new FirstNoteExtractor())), "First Note");
+        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteExtractor())), "Last song note");
+
+//        drawHistogram(createFirstNoteDataset(createHistogram(songs, new FirstNoteExtractor())), "First Note");
+        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteFirstMelodicRowExtractor())), "Last note of First Melodic row");
     }
 
     private void drawHistogram(CategoryDataset dataset, String title) {
