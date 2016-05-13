@@ -47,9 +47,11 @@ public class Main {
 
         //drawHistograms(songs);
 
-        Map<String, Song> songMap = new HashMap<>();
+        Map<String, Song> songTitleMap = new HashMap<>();
+        Map<String, Song> songFileNameMap = new HashMap<>();
         for (Song s : songs) {
-            songMap.put(s.getTitle(), s);
+            songTitleMap.put(s.getTitle(), s);
+            songFileNameMap.put(s.getFileName(), s);
         }
 
         File file = new File(System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Note_.csv");
@@ -64,20 +66,25 @@ public class Main {
 
                 List<Song> selectedSongs = new ArrayList<>();
                 for (int i = 2; i < count + 2; i++) {
-                    String title = parts[i];
+                    String songFileName = parts[i];
 
-                    if (title.startsWith("[")) {
-                        title = title.substring(1);
+                    if (songFileName.startsWith("[")) {
+                        songFileName = songFileName.substring(1);
                     }
-                    if (title.endsWith("]")) {
-                        title = title.substring(0, title.length() - 1);
+                    if (songFileName.endsWith("]")) {
+                        songFileName = songFileName.substring(0, songFileName.length() - 1);
                     }
-                    if (title.startsWith(" ")) {
-                        title = title.substring(1);
+                    if (songFileName.startsWith(" ")) {
+                        songFileName = songFileName.substring(1);
                     }
-                    title = title.replace("txt", "");
-                    Song song = songMap.get(title);
-                    if (song != null) {
+                    Song song = songFileNameMap.get(songFileName);
+                    if (song == null) {
+                        songFileName = songFileName.replace("txt", "");
+                        song = songTitleMap.get(songFileName);
+                        if (song != null) { // if found by song name
+                            selectedSongs.add(song);
+                        }
+                    } else {  // if found by file name
                         selectedSongs.add(song);
                     }
                 }
