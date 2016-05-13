@@ -1,10 +1,17 @@
 package com.example.app.filehelpers;
 
-import com.example.app.models.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
+import com.example.app.models.Alter;
+import com.example.app.models.Genre;
+import com.example.app.models.Location;
+import com.example.app.models.Measure;
+import com.example.app.models.Note;
+import com.example.app.models.Pitch;
+import com.example.app.models.Song;
+import com.example.app.models.Step;
 
 public class XMLtoSong {
 
@@ -44,6 +51,7 @@ public class XMLtoSong {
 
         Song.Builder song = new Song.Builder()
                 .author(author)
+                .fileName(fileName)
                 .year(year)
                 .melodicRows(split[2].substring(0, split[2].length() - 1))
                 .location(new Location(location))

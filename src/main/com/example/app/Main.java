@@ -1,5 +1,23 @@
 package com.example.app;
 
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.ApplicationFrame;
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
 import com.example.app.models.Note;
@@ -10,22 +28,6 @@ import com.example.app.models.filters.FirstNoteExtractor;
 import com.example.app.models.filters.LastNoteExtractor;
 import com.example.app.models.filters.LastNoteFirstMelodicRowExtractor;
 import com.example.app.models.filters.MusicalFeatureExtractor;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.ApplicationFrame;
-
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Main {
@@ -39,7 +41,8 @@ public class Main {
     }
 
     public Main() {
-        List<Song> songs = TextToSongHelper.getSongs(new FileReader(PATH_EVERYONE));
+        FileReader songFileReader = new FileReader(PATH_ALL);
+        List<Song> songs = TextToSongHelper.getSongs(songFileReader);
         System.out.println("Total songs processed: " + songs.size());
 
         //drawHistograms(songs);
