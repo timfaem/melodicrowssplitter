@@ -8,6 +8,7 @@ public class Song {
     private String author;
 
     private String title;
+    private String fileName;
     private int year;
     private Location location;
     private String melodicRows;
@@ -21,6 +22,7 @@ public class Song {
     public String toString() {
         return "Song{" + "\n" +
                 "title='" + title + "\n" +
+                "fileName='" + fileName + "\n" +
                 ", year=" + year + "\n" +
                 ", location=" + location + "\n" +
                 ", melodicRows='" + melodicRows + "\n" +
@@ -41,6 +43,11 @@ public class Song {
 
         public Builder title(String value) {
             building.title = value;
+            return this;
+        }
+
+        public Builder fileName(String value) {
+            building.fileName = value;
             return this;
         }
 
@@ -94,6 +101,10 @@ public class Song {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public int getYear() {
