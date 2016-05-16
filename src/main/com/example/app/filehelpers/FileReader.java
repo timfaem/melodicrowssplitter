@@ -43,10 +43,15 @@ public class FileReader {
     }
 
     private String readFileText(String songFilePath) throws IOException {
-        Charset charset = Charset.forName("utf-16");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(songFilePath), charset));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(songFilePath), Charset.forName("utf-16")));
 
-        String line = null; //ignore first one
+        String line = reader.readLine();
+        if (!line.startsWith("<?xml"))
+        {
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(songFilePath), Charset.forName("utf-8")));
+            //TODO check if the ignore of first line is needed
+            line = reader.readLine();
+        }
         StringBuilder builder = new StringBuilder();
         while ((line = reader.readLine()) != null) {
             builder.append(line).append(System.lineSeparator());

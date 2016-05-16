@@ -34,11 +34,11 @@ public class Main {
     private static final String PATH_TEST = System.getProperty("user.dir") + "\\input\\test";
     private static final String PATH_EVERYONE = "C:\\Users\\Tm\\Desktop\\judi doctorat\\RFSDB xml";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new Main();
     }
 
-    public Main() {
+    public Main() throws IOException {
         FileReader songFileReader = new FileReader(PATH_EVERYONE);
         List<Song> songs = TextToSongHelper.getSongs(songFileReader);
         System.out.println("Total songs processed: " + songs.size());
@@ -55,70 +55,83 @@ public class Main {
         File file = new File(System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Note_.csv");
         try {
             BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
-//            bRead.readLine();
+            bRead.readLine();
             String line = bRead.readLine(); //ignore column titles
-            while ((line = bRead.readLine()) != null) {
-            String[] parts = line.split(",");
-            Integer count = Integer.parseInt(parts[0]);
-            String pattern = parts[1];
-
-            List<Song> selectedSongs = new ArrayList<>();
-            for (int i = 2; i < count + 2; i++) {
-                String songFileName = parts[i];
-
-                if (songFileName.startsWith("[")) {
-                    songFileName = songFileName.substring(1);
-                }
-                if (songFileName.endsWith("]")) {
-                    songFileName = songFileName.substring(0, songFileName.length() - 1);
-                }
-                if (songFileName.startsWith(" ")) {
-                    songFileName = songFileName.substring(1);
-                }
-                songFileName = songFileName.replace(".txt", ".xml");
-                Song song = songFileNameMap.get(songFileName);
-                if (song == null) {
-                    songFileName = songFileName.replace(".xml", "");
-                    song = songTitleMap.get(songFileName);
-                    if (song != null) { // if found by song name
-                        selectedSongs.add(song);
-                    }
-                } else {  // if found by file name
-                    selectedSongs.add(song);
-                }
-            }
-
-            int sum = 0;
-
-            int totalNoNullYearSongs = 0;
-            for (Song s : selectedSongs) {
-                if (s.getYear() != 0) {
-                    totalNoNullYearSongs++;
-                    sum += s.getYear();
-                }
-            }
-            Double avg = 0.0;
-            if (totalNoNullYearSongs != 0) {
-                avg = Double.valueOf(sum / totalNoNullYearSongs);
-            }
-
-            Double varianceNumerator = 0.0;
-
-            for (Song s : selectedSongs) {
-                varianceNumerator += Math.pow(s.getYear() - avg, 2);
-            }
-
-            System.out.println(
-                    "Count: " + count +
-                    " Nr: " + totalNoNullYearSongs +
-                    " Pattern: " + pattern +
-                    " StdDev: " + (totalNoNullYearSongs != 0 ? Math.sqrt(varianceNumerator / totalNoNullYearSongs) : "No std dev"));
-            }
+//            while ((line = bRead.readLine()) != null) {
+            extractSongInfo(songTitleMap, songFileNameMap, line);
+//            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void extractSongInfo(Map<String, Song> songTitleMap, Map<String, Song> songFileNameMap, String line) {
+        String[] parts = line.split(",");
+        Integer count = Integer.parseInt(parts[0]);
+        String pattern = parts[1];
+
+        List<Song> selectedSongs = new ArrayList<>();
+        for (int i = 2; i < count + 2; i++) {
+            String songFileName = trimFileName(parts[i]);
+            Song song = songFileNameMap.get(songFileName);
+            if (song == null) {
+                songFileName = songFileName.replace(".xml", "");
+                song = songTitleMap.get(songFileName);
+                if (song != null) { // if found by song name
+                    selectedSongs.add(song);
+                }
+            } else {  // if found by file name
+                selectedSongs.add(song);
+            }
+        }
+
+        computeStdDev(count, pattern, selectedSongs);
+    }
+
+    private Double computeStdDev(Integer count, String pattern, List<Song> selectedSongs) {
+        int sum = 0;
+        int totalNoNullYearSongs = 0;
+        for (Song s : selectedSongs) {
+            if (s.getYear() != 0) {
+                totalNoNullYearSongs++;
+                sum += s.getYear();
+            }
+        }
+        Double avg = 0.0;
+        if (totalNoNullYearSongs != 0) {
+            avg = Double.valueOf(sum / totalNoNullYearSongs);
+        }
+
+        Double varianceNumerator = 0.0;
+        for (Song s : selectedSongs) {
+            varianceNumerator += Math.pow(s.getYear() - avg, 2);
+        }
+
+        Double stdDev = totalNoNullYearSongs != 0 ? Math.sqrt(varianceNumerator / totalNoNullYearSongs) : 9999;
+
+        System.out.println(
+                "Count: " + count +
+                        " Nr: " + totalNoNullYearSongs +
+                        " Pattern: " + pattern +
+                        " StdDev: " + stdDev);
+
+        return stdDev;
+    }
+
+    private String trimFileName(String songFileName) {
+        if (songFileName.startsWith("[")) {
+            songFileName = songFileName.substring(1);
+        }
+        if (songFileName.endsWith("]")) {
+            songFileName = songFileName.substring(0, songFileName.length() - 1);
+        }
+        if (songFileName.startsWith(" ")) {
+            songFileName = songFileName.substring(1);
+        }
+        songFileName = songFileName.replace(".txt", ".xml");
+        return songFileName;
     }
 
     private void drawHistograms(List<Song> songs) {

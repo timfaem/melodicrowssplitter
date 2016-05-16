@@ -1,26 +1,25 @@
 package com.example.app.filehelpers;
 
+import com.example.app.models.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
-import com.example.app.models.Alter;
-import com.example.app.models.Genre;
-import com.example.app.models.Location;
-import com.example.app.models.Measure;
-import com.example.app.models.Note;
-import com.example.app.models.Pitch;
-import com.example.app.models.Song;
-import com.example.app.models.Step;
+
+import java.io.FileNotFoundException;
 
 public class XMLtoSong {
 
-    public static Song toSong(String xmlString, String filePath) {
+    public static Song toSong(String xmlString, String filePath, LocationFinder locFinder) throws FileNotFoundException {
 
         JSONObject jsonObj = XML.toJSONObject(xmlString);
 
-        JSONObject scorePartwiseJSON = jsonObj.getJSONObject("score-partwise");
-
+        JSONObject scorePartwiseJSON = new JSONObject();
+        if (jsonObj.has("score-partwise")) {
+            scorePartwiseJSON = jsonObj.getJSONObject("score-partwise");
+        } else {
+            System.out.println("Song at: " + filePath + " has no score-partwise");
+        }
         String creator = scorePartwiseJSON.getJSONObject("identification").getJSONObject("creator").getString("content");
         String[] split = creator.split("\r\n");
         String title = split[0];
@@ -29,7 +28,7 @@ public class XMLtoSong {
         Genre genre = Genre.fromString(authorGenreNo[1].substring(0, authorGenreNo[1].length() - 1));
 
 
-        String y = split[1].substring(0, 4);
+        String y = split[1].startsWith(" ") ? split[1].substring(1, 5) : split[1].substring(0, 4);
         int year = 0;
         String location;
         if (y.matches("\\b\\d{4}\\b")) {
@@ -39,24 +38,29 @@ public class XMLtoSong {
             location = split[1].trim().replace(". \r", "");
         }
 
-        JSONArray measuresJSON = null;
+        JSONArray measuresJSON = new JSONArray();
         try {
-            measuresJSON = scorePartwiseJSON.getJSONObject("part").getJSONArray("measure");
+            //TODO to be uncommented
+//            measuresJSON = scorePartwiseJSON.getJSONObject("part").getJSONArray("measure");
         } catch (JSONException ex) {
             System.out.println("Exception at: " + filePath);
-//            measuresJSON.put(0, scorePartwiseJSON.getJSONObject("part").getJSONObject("measure"));
-//            return new Song.Builder().build();
-//            measuresJSON = new JSONArray(scorePartwiseJSON.getJSONObject("part").getJSONObject("measure"));
         }
 
         String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
+
+        String[] judetSat = location.split("\\.");
+        String sat = judetSat[judetSat.length - 2];
+        if (sat.startsWith(" ")) {
+            sat = sat.substring(1);
+        }
+        Location songLocation = locFinder.getLocationForName(sat);
 
         Song.Builder song = new Song.Builder()
                 .author(author)
                 .fileName(fileName)
                 .year(year)
                 .melodicRows(split[2].substring(0, split[2].length() - 1))
-                .location(new Location(location))
+                .location(songLocation)
                 .title(title)
                 .genre(genre);
 
