@@ -1,23 +1,5 @@
 package com.example.app;
 
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.ApplicationFrame;
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
 import com.example.app.models.Note;
@@ -28,6 +10,22 @@ import com.example.app.models.filters.FirstNoteExtractor;
 import com.example.app.models.filters.LastNoteExtractor;
 import com.example.app.models.filters.LastNoteFirstMelodicRowExtractor;
 import com.example.app.models.filters.MusicalFeatureExtractor;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.ApplicationFrame;
+
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Main {
@@ -41,7 +39,7 @@ public class Main {
     }
 
     public Main() {
-        FileReader songFileReader = new FileReader(PATH_ALL);
+        FileReader songFileReader = new FileReader(PATH_EVERYONE);
         List<Song> songs = TextToSongHelper.getSongs(songFileReader);
         System.out.println("Total songs processed: " + songs.size());
 
@@ -57,70 +55,70 @@ public class Main {
         File file = new File(System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Note_.csv");
         try {
             BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
-            bRead.readLine();
+//            bRead.readLine();
             String line = bRead.readLine(); //ignore column titles
-//            while ((line = bRead.readLine()) != null) {
-                String[] parts = line.split(",");
-                Integer count = Integer.parseInt(parts[0]);
-                String pattern = parts[1];
+            while ((line = bRead.readLine()) != null) {
+            String[] parts = line.split(",");
+            Integer count = Integer.parseInt(parts[0]);
+            String pattern = parts[1];
 
-                List<Song> selectedSongs = new ArrayList<>();
-                for (int i = 2; i < count + 2; i++) {
-                    String songFileName = parts[i];
+            List<Song> selectedSongs = new ArrayList<>();
+            for (int i = 2; i < count + 2; i++) {
+                String songFileName = parts[i];
 
-                    if (songFileName.startsWith("[")) {
-                        songFileName = songFileName.substring(1);
-                    }
-                    if (songFileName.endsWith("]")) {
-                        songFileName = songFileName.substring(0, songFileName.length() - 1);
-                    }
-                    if (songFileName.startsWith(" ")) {
-                        songFileName = songFileName.substring(1);
-                    }
-                    Song song = songFileNameMap.get(songFileName);
-                    if (song == null) {
-                        songFileName = songFileName.replace("txt", "");
-                        song = songTitleMap.get(songFileName);
-                        if (song != null) { // if found by song name
-                            selectedSongs.add(song);
-                        }
-                    } else {  // if found by file name
+                if (songFileName.startsWith("[")) {
+                    songFileName = songFileName.substring(1);
+                }
+                if (songFileName.endsWith("]")) {
+                    songFileName = songFileName.substring(0, songFileName.length() - 1);
+                }
+                if (songFileName.startsWith(" ")) {
+                    songFileName = songFileName.substring(1);
+                }
+                songFileName = songFileName.replace(".txt", ".xml");
+                Song song = songFileNameMap.get(songFileName);
+                if (song == null) {
+                    songFileName = songFileName.replace(".xml", "");
+                    song = songTitleMap.get(songFileName);
+                    if (song != null) { // if found by song name
                         selectedSongs.add(song);
                     }
+                } else {  // if found by file name
+                    selectedSongs.add(song);
                 }
+            }
 
-                int sum = 0;
-//                Double avg = selectedSongs.stream().mapToInt(Song::getYearInteger).average().getAsDouble();
+            int sum = 0;
 
-                int totalNoNullYearSongs = 0;
-                for (Song s : selectedSongs) {
-                    if (s.getYear() != 0) {
-                        totalNoNullYearSongs++;
-                        sum += s.getYear();
-                    }
+            int totalNoNullYearSongs = 0;
+            for (Song s : selectedSongs) {
+                if (s.getYear() != 0) {
+                    totalNoNullYearSongs++;
+                    sum += s.getYear();
                 }
-                Double avg = 0.0;
-                if (totalNoNullYearSongs != 0) {
-                    avg = Double.valueOf(sum / totalNoNullYearSongs);
-                }
+            }
+            Double avg = 0.0;
+            if (totalNoNullYearSongs != 0) {
+                avg = Double.valueOf(sum / totalNoNullYearSongs);
+            }
 
-                Double varianceNumerator = 0.0;
+            Double varianceNumerator = 0.0;
 
-                for (Song s : selectedSongs) {
-                    varianceNumerator += Math.pow(s.getYear() - avg, 2);
-                }
+            for (Song s : selectedSongs) {
+                varianceNumerator += Math.pow(s.getYear() - avg, 2);
+            }
 
-                System.out.println("Nr: " + totalNoNullYearSongs +
-                        " Pattern: " + pattern +
-                        " StdDev: " + (totalNoNullYearSongs != 0 ? Math.sqrt(varianceNumerator / totalNoNullYearSongs) : "No std dev"));
-//            }
+            System.out.println(
+                    "Count: " + count +
+                    " Nr: " + totalNoNullYearSongs +
+                    " Pattern: " + pattern +
+                    " StdDev: " + (totalNoNullYearSongs != 0 ? Math.sqrt(varianceNumerator / totalNoNullYearSongs) : "No std dev"));
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void drawHistograms(List<Song> songs) {

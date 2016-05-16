@@ -15,7 +15,7 @@ import com.example.app.models.Step;
 
 public class XMLtoSong {
 
-    public static Song toSong(String xmlString, String fileName) {
+    public static Song toSong(String xmlString, String filePath) {
 
         JSONObject jsonObj = XML.toJSONObject(xmlString);
 
@@ -43,11 +43,13 @@ public class XMLtoSong {
         try {
             measuresJSON = scorePartwiseJSON.getJSONObject("part").getJSONArray("measure");
         } catch (JSONException ex) {
-            System.out.println("Exception at: " + fileName);
+            System.out.println("Exception at: " + filePath);
 //            measuresJSON.put(0, scorePartwiseJSON.getJSONObject("part").getJSONObject("measure"));
 //            return new Song.Builder().build();
 //            measuresJSON = new JSONArray(scorePartwiseJSON.getJSONObject("part").getJSONObject("measure"));
         }
+
+        String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
 
         Song.Builder song = new Song.Builder()
                 .author(author)
