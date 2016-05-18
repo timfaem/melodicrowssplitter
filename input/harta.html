@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://maps.googleapis.com/maps/api/js"></script>
+<script>
+	var locations = [['"Sibiel',45.764883,23.906619,1], ['"Butimanu',44.692717,25.895056,2], ['"Bozovici',44.927147,22.002161,3], ['"Poienile Izei',47.699725,24.113347,4], ['"Vadu Izei',47.889694,23.931097,5], ['"Mihoveni',47.679867,26.182131,6], ['"Borloveni',44.968119,22.143444,7], ['"Mada',46.000192,23.130542,8], ['"Runcu Mare',45.743200,22.639600,9], ['"Sf. Ilie',47.635547,26.209578,10], ['"Petia',47.509983,26.318200,11], ['"Clocotici',45.406389,24.329444,12], ['"Trestia',46.023900,22.933600,13], ['"Glimboca',45.483056,22.316667,14], ['"Bozovici',44.927147,22.002161,15], ['"Petreni',45.791311,23.023767,16], ['"Bozovici',44.927147,22.002161,17], ['"Pria Cizer',47.048611,22.890278,18], ['"Ieud',0.000000,0.000000,19], ['"Clocotici',45.406389,24.329444,20], ['"Limba',46.040000,23.597700,21], ['"Chelmac',46.081667,21.884444,22], ['"Stupca',47.566019,26.135678,23], ['"Tigvanul Mare',0.000000,0.000000,24], ['"Gruiu Lupului',45.428333,24.340833,25]];
+
+
+	function initialize() 
+	{
+
+		var mapProp = {
+			//45.948420, 25.105847
+			center:new google.maps.LatLng(45.948420,25.105847),
+			zoom:7,
+			mapTypeId:google.maps.MapTypeId.ROADMAP
+		};
+		var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+	
+		var markers =[];
+		for (i = 0; i < locations.length; i++) 
+		{  
+			markers[i] = new google.maps.Marker({
+			     position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+			     animation: google.maps.Animation.DROP,
+			     title:locations[i][0],
+			     map: map});
+		}
+
+	}
+
+	google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>
+</head>
+
+<body>
+<div id="googleMap" style="width:1000px;height:760px;"></div>
+</body>
+
+</html>

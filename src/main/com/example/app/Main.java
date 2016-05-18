@@ -2,10 +2,7 @@ package com.example.app;
 
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
-import com.example.app.models.Note;
-import com.example.app.models.Pitch;
-import com.example.app.models.Song;
-import com.example.app.models.Step;
+import com.example.app.models.*;
 import com.example.app.models.filters.FirstNoteExtractor;
 import com.example.app.models.filters.LastNoteExtractor;
 import com.example.app.models.filters.LastNoteFirstMelodicRowExtractor;
@@ -23,6 +20,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,6 +32,13 @@ public class Main {
     private static final String PATH_ALL = System.getProperty("user.dir") + "\\input\\all";
     private static final String PATH_TEST = System.getProperty("user.dir") + "\\input\\test";
     private static final String PATH_EVERYONE = "C:\\Users\\Tm\\Desktop\\judi doctorat\\RFSDB xml";
+    private static final String ARRANGED_RESULT_COMPARE_6_NOTE = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Note_.csv";
+    private static final String ARRANGED_RESULT_COMPARE_6_TIMP = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Timp_.csv";
+    private static final String ARRANGED_RESULT_COMPARE_7_NOTE = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_7_Note_.csv";
+    private static final String ARRANGED_RESULT_COMPARE_7_TIMP = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_7_Timp_.csv";
+
+    private static final String ARRANGED_RESULT_COMPARE_8_NOTE = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_8_Note_.csv";
+    private static final String ARRANGED_RESULT_COMPARE_8_NOTE_TIMP = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_8_Note_Timp_.csv";
 
     public static void main(String[] args) throws IOException {
         new Main();
@@ -52,13 +58,22 @@ public class Main {
             songFileNameMap.put(s.getFileName(), s);
         }
 
-        File file = new File(System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_6_Note_.csv");
+        File file = new File(ARRANGED_RESULT_COMPARE_8_NOTE_TIMP);
         try {
             BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
             bRead.readLine();
             String line = bRead.readLine(); //ignore column titles
 //            while ((line = bRead.readLine()) != null) {
-            extractSongInfo(songTitleMap, songFileNameMap, line);
+            List<Song> samePatternSongs = extractSongInfo(songTitleMap, songFileNameMap, line);
+            List<String> locations = new ArrayList<>();
+            int i = 1;
+            for (Song s : samePatternSongs) {
+                Location loc = s.getLocation();
+                if (loc != null) {
+                    locations.add("['" + loc.name + "'," + BigDecimal.valueOf(loc.lat).setScale(6, RoundingMode.HALF_UP) + "," + BigDecimal.valueOf(loc.lon).setScale(6, RoundingMode.HALF_UP) + "," + (i++) + "]");
+                }
+            }
+            System.out.println(locations);
 //            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -67,7 +82,7 @@ public class Main {
         }
     }
 
-    private void extractSongInfo(Map<String, Song> songTitleMap, Map<String, Song> songFileNameMap, String line) {
+    private List<Song> extractSongInfo(Map<String, Song> songTitleMap, Map<String, Song> songFileNameMap, String line) {
         String[] parts = line.split(",");
         Integer count = Integer.parseInt(parts[0]);
         String pattern = parts[1];
@@ -88,6 +103,7 @@ public class Main {
         }
 
         computeStdDev(count, pattern, selectedSongs);
+        return selectedSongs;
     }
 
     private Double computeStdDev(Integer count, String pattern, List<Song> selectedSongs) {

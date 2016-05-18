@@ -18,18 +18,28 @@ public class LocationFileReader implements LocationFinder {
 
     public LocationFileReader() throws IOException {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(PATH), Charset.forName("utf-32")));
-        String line;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(PATH), Charset.forName("Windows-1252")));
+        String line = reader.readLine(); // TODO ignore the column names
         while ((line = reader.readLine()) != null) {
             String parts[] = line.split("\\s*,\\s*");
-            String judetSat = parts[0];
-            if (parts.length == 1) {
-                continue;
+            String locName = parts[0];
+            if (locName.startsWith("\""))
+            {
+                locName.substring(1);
             }
-            Double latDouble = degreesToDouble(parts[1]);
-            Double longDouble = degreesToDouble(parts[2]);
+            Double latDouble = 0.0, longDouble = 0.0;
+            if (parts.length == 4) {
+                latDouble = degreesToDouble(parts[2]);
+                longDouble = degreesToDouble(parts[3]);
+            } else if (parts.length == 3) {
+                latDouble = degreesToDouble(parts[1]);
+                longDouble = degreesToDouble(parts[2]);
+            } else {
 
-            locations.put(judetSat, new Location(latDouble, longDouble, judetSat));
+            }
+
+
+            locations.put(locName, new Location(latDouble, longDouble, locName));
         }
     }
 
@@ -44,16 +54,28 @@ public class LocationFileReader implements LocationFinder {
         int indexOfMinutes = location.indexOf("'");
         int indexOfSeconds = location.indexOf("\"");
 
-        if (indexOfDegree != -1) {
-            loc = Double.valueOf(location.substring(0, indexOfDegree));
-        }
+        try {
+            if (indexOfDegree != -1) {
+                loc = Double.valueOf(location.substring(0, indexOfDegree).trim());
+            }
 
-        if (indexOfMinutes != -1) {
-            loc += Double.valueOf(location.substring(indexOfDegree + 1, indexOfMinutes)) / 60;
-        }
+            if (indexOfMinutes != -1) {
+                String min = location.substring(indexOfDegree + 1, indexOfMinutes).trim();
+                if (min.startsWith(" ")) {
+                    min = min.substring(1);
+                }
+                loc += Double.valueOf(min) / 60;
+            }
 
-        if (indexOfSeconds != -1) {
-            loc += Double.valueOf(location.substring(indexOfMinutes + 1, indexOfSeconds)) / 3600;
+            if (indexOfSeconds != -1) {
+                String sec = location.substring(indexOfMinutes + 1, indexOfSeconds).trim();
+                if (sec.startsWith(" ")) {
+                    sec = sec.substring(1);
+                }
+                loc += Double.valueOf(sec) / 3600;
+            }
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
         }
         return loc;
     }
