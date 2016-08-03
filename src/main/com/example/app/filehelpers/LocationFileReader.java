@@ -16,6 +16,10 @@ public class LocationFileReader implements LocationFinder {
     private static final String PATH = "C:\\Projects\\repos\\melodicrowssplitter\\input\\Coordonate localitati corectat.csv";
     private Map<String, Location> locations = new HashMap<>();
 
+    public static void main(String[] args) throws IOException {
+        new LocationFileReader();
+    }
+
     public LocationFileReader() throws IOException {
 //        Charset charSet = Charset.forName("Windows-1252");
         Charset charSet = Charset.forName("UTF-8");
@@ -23,14 +27,22 @@ public class LocationFileReader implements LocationFinder {
         String line = reader.readLine(); // TODO ignore the column names
         while ((line = reader.readLine()) != null) {
             String parts[] = line.split("\\s*,\\s*");
-            String locName = parts[0];
+            String satJudName = parts[0];
             Double latDouble = 0.0, longDouble = 0.0;
             if (parts.length >= 3) {
                 latDouble = degreesToDouble(parts[1]);
                 longDouble = degreesToDouble(parts[2]);
             }
-            locations.put(locName, new Location(latDouble, longDouble, locName));
+            String satName = extractSatName(satJudName);
+            locations.put(satName, new Location(latDouble, longDouble, satJudName));
         }
+        System.out.println(locations);
+    }
+
+    private String extractSatName(String satJudName) {
+        int separatorIndex = satJudName.lastIndexOf("-");
+        return separatorIndex != -1 ?
+                satJudName.substring(0, separatorIndex) : satJudName;
     }
 
     public static Double degreesToDouble(String location) {
