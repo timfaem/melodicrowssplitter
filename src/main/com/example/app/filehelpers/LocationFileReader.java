@@ -13,32 +13,22 @@ import java.util.Map;
 public class LocationFileReader implements LocationFinder {
 
     private static final Double UNKNOWN = 0.0;
-    private static final String PATH = "C:\\Projects\\repos\\melodicrowssplitter\\input\\Coordonate localitati.csv";
+    private static final String PATH = "C:\\Projects\\repos\\melodicrowssplitter\\input\\Coordonate localitati corectat.csv";
     private Map<String, Location> locations = new HashMap<>();
 
     public LocationFileReader() throws IOException {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(PATH), Charset.forName("Windows-1252")));
+//        Charset charSet = Charset.forName("Windows-1252");
+        Charset charSet = Charset.forName("UTF-8");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(PATH), charSet));
         String line = reader.readLine(); // TODO ignore the column names
         while ((line = reader.readLine()) != null) {
             String parts[] = line.split("\\s*,\\s*");
             String locName = parts[0];
-            if (locName.startsWith("\""))
-            {
-                locName.substring(1);
-            }
             Double latDouble = 0.0, longDouble = 0.0;
-            if (parts.length == 4) {
-                latDouble = degreesToDouble(parts[2]);
-                longDouble = degreesToDouble(parts[3]);
-            } else if (parts.length == 3) {
+            if (parts.length >= 3) {
                 latDouble = degreesToDouble(parts[1]);
                 longDouble = degreesToDouble(parts[2]);
-            } else {
-
             }
-
-
             locations.put(locName, new Location(latDouble, longDouble, locName));
         }
     }
