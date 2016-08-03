@@ -7,8 +7,12 @@ import org.json.JSONObject;
 import org.json.XML;
 
 import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class XMLtoSong {
+
+    public static Set<String> exceptions = new HashSet<>();
 
     public static Song toSong(String xmlString, String filePath, LocationFinder locFinder) throws FileNotFoundException {
 
@@ -48,8 +52,8 @@ public class XMLtoSong {
 
         String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1);
 
-        String[] judetSat = location.split("\\.");
-        String sat = judetSat[judetSat.length - 2];
+        String[] judetSat = location.trim().split("\\.");
+        String sat = judetSat[judetSat.length - 1];
         if (sat.startsWith(" ")) {
             sat = sat.substring(1);
         }
@@ -63,6 +67,11 @@ public class XMLtoSong {
                 .location(songLocation)
                 .title(title)
                 .genre(genre);
+
+        if (songLocation == null) {
+            System.out.print(" " + sat + "(" + judetSat[judetSat.length - 2] + ")");
+            exceptions.add(sat + "(" + judetSat[judetSat.length - 2] + ")");
+        }
 
         for (int i = 0; i < measuresJSON.length(); i++) {
             Measure.Builder measure = new Measure.Builder();

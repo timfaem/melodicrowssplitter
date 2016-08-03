@@ -2,6 +2,7 @@ package com.example.app;
 
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
+import com.example.app.filehelpers.XMLtoSong;
 import com.example.app.models.*;
 import com.example.app.models.filters.FirstNoteExtractor;
 import com.example.app.models.filters.LastNoteExtractor;
@@ -48,6 +49,7 @@ public class Main {
         FileReader songFileReader = new FileReader(PATH_EVERYONE);
         List<Song> songs = TextToSongHelper.getSongs(songFileReader);
         System.out.println("Total songs processed: " + songs.size());
+        System.out.println(XMLtoSong.exceptions);
 
         //drawHistograms(songs);
 
