@@ -3,29 +3,20 @@ package com.example.app;
 import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
 import com.example.app.filehelpers.XMLtoSong;
-import com.example.app.models.*;
-import com.example.app.models.filters.FirstNoteExtractor;
-import com.example.app.models.filters.LastNoteExtractor;
-import com.example.app.models.filters.LastNoteFirstMelodicRowExtractor;
-import com.example.app.models.filters.MusicalFeatureExtractor;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.ApplicationFrame;
+import com.example.app.histograms.GatherYearHistogram;
+import com.example.app.models.Location;
+import com.example.app.models.Song;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 
 public class Main {
@@ -51,7 +42,7 @@ public class Main {
         System.out.println("Total songs processed: " + songs.size());
         System.out.println(XMLtoSong.exceptions);
 
-        //drawHistograms(songs);
+//        drawHistograms(songs);
 
         Map<String, Song> songTitleMap = new HashMap<>();
         Map<String, Song> songFileNameMap = new HashMap<>();
@@ -67,6 +58,8 @@ public class Main {
             String line = bRead.readLine(); //ignore column titles
 //            while ((line = bRead.readLine()) != null) {
             List<Song> samePatternSongs = extractSongInfo(songTitleMap, songFileNameMap, line);
+            GatherYearHistogram gatherYearHisto = new GatherYearHistogram(samePatternSongs, ARRANGED_RESULT_COMPARE_8_NOTE_TIMP);
+            gatherYearHisto.print();
             List<String> locations = new ArrayList<>();
             int i = 1;
             for (Song s : samePatternSongs) {
@@ -126,15 +119,8 @@ public class Main {
         for (Song s : selectedSongs) {
             varianceNumerator += Math.pow(s.getYear() - avg, 2);
         }
-
         Double stdDev = totalNoNullYearSongs != 0 ? Math.sqrt(varianceNumerator / totalNoNullYearSongs) : 9999;
-
-        System.out.println(
-                "Count: " + count +
-                        " Nr: " + totalNoNullYearSongs +
-                        " Pattern: " + pattern +
-                        " StdDev: " + stdDev);
-
+        System.out.println("Count: " + count + " Nr: " + totalNoNullYearSongs + " Pattern: " + pattern + " StdDev: " + stdDev);
         return stdDev;
     }
 
@@ -151,80 +137,4 @@ public class Main {
         songFileName = songFileName.replace(".txt", ".xml");
         return songFileName;
     }
-
-    private void drawHistograms(List<Song> songs) {
-        //        SongHelper.filterSongsByGenre(songs, Genre.BOCET);
-
-        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new FirstNoteExtractor())), "First Note");
-        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteExtractor())), "Last song note");
-
-//        drawHistogram(createFirstNoteDataset(createHistogram(songs, new FirstNoteExtractor())), "First Note");
-        drawHistogram(createFirstNoteDataset(createPitchHistogram(songs, new LastNoteFirstMelodicRowExtractor())), "Last note of First Melodic row");
-    }
-
-    private void drawHistogram(CategoryDataset dataset, String title) {
-        JFreeChart barChart = ChartFactory.createBarChart("", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
-        barChart.setAntiAlias(true);
-        ChartPanel chartPanel = new ChartPanel(barChart);
-        chartPanel.setPreferredSize(new Dimension(200, 150));
-        ApplicationFrame frame = new ApplicationFrame(title);
-        frame.setContentPane(chartPanel);
-        frame.setSize(new Dimension(400, 400));
-        frame.setVisible(true);
-    }
-
-    private void drawHistogram(CategoryDataset dataset) {
-        drawHistogram(dataset, "");
-    }
-
-    private CategoryDataset createFirstNoteDataset(Map<Pitch, AtomicInteger> histogramData) {
-        Map<Pitch, AtomicInteger> histogram = new TreeMap<>(histogramData);
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-//        histogram.entrySet().removeIf(pitchAtomicIntegerEntry -> {
-//            Pitch pi = pitchAtomicIntegerEntry.getKey();
-//            return isIgnored(pi);
-//        });
-        for (Map.Entry entry : histogram.entrySet()) {
-            if (!isIgnored((Pitch) entry.getKey())) {
-                dataset.addValue(((AtomicInteger) entry.getValue()).doubleValue(), ((Pitch) entry.getKey()).getStep().toString() + ((Pitch) entry.getKey()).getOctave(), ((Pitch) entry.getKey()).getStep().toString() + ((Pitch) entry.getKey()).getOctave());
-            }
-            System.out.println(((Pitch) entry.getKey()).getOctave() + " " + ((Pitch) entry.getKey()).getStep() + " = " + entry.getValue());
-        }
-        return dataset;
-    }
-
-    private boolean isIgnored(Pitch pi) {
-        return (pi.getOctave() < 3) ||
-                (pi.getOctave() == 3 && (pi.getStep().compareTo(Step.D) < 0)) ||
-                (pi.getOctave() == 4 && (pi.getStep().compareTo(Step.E) > 0)) ||
-                (pi.getOctave() > 4);
-    }
-
-    private Map<Pitch, AtomicInteger> createPitchHistogram(List<Song> songs, MusicalFeatureExtractor<Note> ext) {
-        Map<Pitch, AtomicInteger> histogram = new HashMap<>();
-        songs.forEach(s -> {
-            Note n = ext.extract(s);
-
-            if (histogram.get(n.getPitch()) == null) {
-                histogram.put(n.getPitch(), new AtomicInteger(1
-                ));
-            } else {
-                histogram.get(n.getPitch()).incrementAndGet();
-            }
-        });
-        return histogram;
-    }
-
-//    private Map<Step, AtomicInteger> createHistogram(List<Song> songs, MusicalFeatureExtractor<Note> extractor) {
-//        Map<Step, AtomicInteger> histogram = new HashMap<>();
-//        for (Step s : Step.values()) {
-//            histogram.put(s, new AtomicInteger(0));
-//        }
-//
-//        songs.forEach(s -> {
-//            Note n = extractor.extract(s);
-//            histogram.get(n.getPitch().getStep()).incrementAndGet();
-//        });
-//        return histogram;
-//    }
 }

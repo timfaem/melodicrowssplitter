@@ -69,7 +69,6 @@ public class XMLtoSong {
                 .genre(genre);
 
         if (songLocation == null) {
-            System.out.print(" " + sat + "(" + judetSat[judetSat.length - 2] + ")");
             exceptions.add(sat + "(" + judetSat[judetSat.length - 2] + ")");
         }
 

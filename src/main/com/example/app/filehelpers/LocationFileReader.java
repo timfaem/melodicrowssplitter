@@ -16,6 +16,10 @@ public class LocationFileReader implements LocationFinder {
     private static final String PATH = "C:\\Projects\\repos\\melodicrowssplitter\\input\\Coordonate localitati corectat.csv";
     private Map<String, Location> locations = new HashMap<>();
 
+//    public static void main(String[] args) throws IOException {
+//        new LocationFileReader();
+//    }
+
     public LocationFileReader() throws IOException {
 //        Charset charSet = Charset.forName("Windows-1252");
         Charset charSet = Charset.forName("UTF-8");
