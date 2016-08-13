@@ -9,10 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.example.app.filehelpers.MapGenerator.generateMapFile;
 
@@ -29,6 +26,17 @@ public class Main {
     private static final String ARRANGED_RESULT_COMPARE_8_NOTE = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_8_Note_.csv";
     private static final String ARRANGED_RESULT_COMPARE_8_NOTE_TIMP = System.getProperty("user.dir") + "\\input\\patternuri\\arranged_result_compare_8_Note_Timp_.csv";
 
+    private static final List<String> inputDataFileList = new ArrayList<>();
+
+    static {
+        inputDataFileList.add(ARRANGED_RESULT_COMPARE_6_NOTE );
+        inputDataFileList.add(ARRANGED_RESULT_COMPARE_6_TIMP );
+        inputDataFileList.add(ARRANGED_RESULT_COMPARE_7_NOTE );
+        inputDataFileList.add(ARRANGED_RESULT_COMPARE_7_TIMP );
+        inputDataFileList.add(ARRANGED_RESULT_COMPARE_8_NOTE );
+        inputDataFileList.add(ARRANGED_RESULT_COMPARE_8_NOTE_TIMP );
+    }
+
     public static void main(String[] args) throws IOException {
         new Main();
     }
@@ -41,6 +49,7 @@ public class Main {
 
         YearHistogram allSongs = new YearHistogram(songs, "all");
         allSongs.print();
+        allSongs.toCSVFile();
 
         Map<String, Song> songTitleMap = new HashMap<>();
         Map<String, Song> songFileNameMap = new HashMap<>();
@@ -49,24 +58,28 @@ public class Main {
             songFileNameMap.put(s.getFileName(), s);
         }
 
-        File file = new File(ARRANGED_RESULT_COMPARE_6_NOTE);
-        try {
-            BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
-            bRead.readLine();
-            String line = bRead.readLine(); //ignore column titles
-//            while ((line = bRead.readLine()) != null) {
-            String idName = file.getName() + "-" + line.split("\\s*\\s")[0];
-            List<Song> samePatternSongs = extractSongInfo(songTitleMap, songFileNameMap, line);
+        for (String inputDataFile : inputDataFileList) {
+            File file = new File(inputDataFile);
+            try {
+                BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
+                String line = bRead.readLine(); //ignore column titles
+                int current = 0, limit = 1;
+                while ((line = bRead.readLine()) != null && current < limit) {
+                    String idName = file.getName() + "-" + line.split("\\s*\\s")[0];
+                    List<Song> samePatternSongs = extractSongInfo(songTitleMap, songFileNameMap, line);
 
-            YearHistogram gatherYearHisto = new YearHistogram(samePatternSongs, idName);
-            gatherYearHisto.print();
-            generateMapFile(samePatternSongs, idName);
+                    YearHistogram gatherYearHisto = new YearHistogram(samePatternSongs, idName);
+                    gatherYearHisto.print();
+                    gatherYearHisto.toCSVFile();
+                    generateMapFile(samePatternSongs, idName);
 
-//            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                    current++;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

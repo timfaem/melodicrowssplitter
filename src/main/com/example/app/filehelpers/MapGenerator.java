@@ -51,7 +51,7 @@ public class MapGenerator {
 
     public static void generateMapFile(List<Song> samePatternSongs, String fileName) {
         List<String> locations = generateLocationList(samePatternSongs);
-        File mapFile = new File("harta" + fileName + ".html");
+        File mapFile = new File(fileName + ".html");
         try {
             FileWriter fos = new FileWriter(mapFile);
             BufferedWriter buf = new BufferedWriter(fos);

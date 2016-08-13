@@ -14,6 +14,7 @@ import org.jfree.ui.ApplicationFrame;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +30,25 @@ public class YearHistogram {
     public YearHistogram(List<Song> samePatternSongs, String title) {
         this.samePatternSongs = samePatternSongs;
         this.title = title;
+        this.data = createYearHistogram(samePatternSongs, new YearExtractor());
     }
 
     public void print() {
-        drawHistogram(createSongYearDataset(createYearHistogram(samePatternSongs, new YearExtractor())), title);
+        drawHistogram(createSongYearDataset(data), title);
+    }
+
+    public void toCSVFile() {
+        File csvFile = new File(title + "histo.csv");
+        try {
+            FileWriter writer = new FileWriter(csvFile);
+            writer.write("an, numar,\n");
+            for (Map.Entry<Integer, AtomicInteger> entry : data.entrySet()) {
+                writer.write(entry.getKey() + "," + entry.getValue() + ",\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -84,6 +100,7 @@ public class YearHistogram {
         }
         System.out.println("Bucketed: " + bucketted);
 
+        this.data = bucketted;
         return bucketted;
     }
 
