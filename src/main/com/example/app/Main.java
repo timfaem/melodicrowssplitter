@@ -1,23 +1,20 @@
 package com.example.app;
 
-import com.example.app.filehelpers.FileReader;
 import com.example.app.filehelpers.TextToSongHelper;
 import com.example.app.filehelpers.XMLtoSong;
-import com.example.app.histograms.GatherYearHistogram;
-import com.example.app.models.Location;
+import com.example.app.histograms.YearHistogram;
 import com.example.app.models.Song;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.app.filehelpers.MapGenerator.generateMapFile;
 
 public class Main {
 
@@ -37,12 +34,13 @@ public class Main {
     }
 
     public Main() throws IOException {
-        FileReader songFileReader = new FileReader(PATH_EVERYONE);
-        List<Song> songs = TextToSongHelper.getSongs(songFileReader);
+
+        List<Song> songs = TextToSongHelper.getSongs(PATH_EVERYONE);
         System.out.println("Total songs processed: " + songs.size());
         System.out.println(XMLtoSong.exceptions);
 
-//        drawHistograms(songs);
+        YearHistogram allSongs = new YearHistogram(songs, "all");
+        allSongs.print();
 
         Map<String, Song> songTitleMap = new HashMap<>();
         Map<String, Song> songFileNameMap = new HashMap<>();
@@ -51,24 +49,19 @@ public class Main {
             songFileNameMap.put(s.getFileName(), s);
         }
 
-        File file = new File(ARRANGED_RESULT_COMPARE_8_NOTE_TIMP);
+        File file = new File(ARRANGED_RESULT_COMPARE_6_NOTE);
         try {
             BufferedReader bRead = new BufferedReader(new java.io.FileReader(file));
             bRead.readLine();
             String line = bRead.readLine(); //ignore column titles
 //            while ((line = bRead.readLine()) != null) {
+            String idName = file.getName() + "-" + line.split("\\s*\\s")[0];
             List<Song> samePatternSongs = extractSongInfo(songTitleMap, songFileNameMap, line);
-            GatherYearHistogram gatherYearHisto = new GatherYearHistogram(samePatternSongs, ARRANGED_RESULT_COMPARE_8_NOTE_TIMP);
+
+            YearHistogram gatherYearHisto = new YearHistogram(samePatternSongs, idName);
             gatherYearHisto.print();
-            List<String> locations = new ArrayList<>();
-            int i = 1;
-            for (Song s : samePatternSongs) {
-                Location loc = s.getLocation();
-                if (loc != null) {
-                    locations.add("['" + loc.name + "'," + BigDecimal.valueOf(loc.lat).setScale(6, RoundingMode.HALF_UP) + "," + BigDecimal.valueOf(loc.lon).setScale(6, RoundingMode.HALF_UP) + "," + (i++) + "]");
-                }
-            }
-            System.out.println(locations);
+            generateMapFile(samePatternSongs, idName);
+
 //            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

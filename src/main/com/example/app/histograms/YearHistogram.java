@@ -21,22 +21,20 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GatherYearHistogram {
+public class YearHistogram {
     private final List<Song> samePatternSongs;
     private final String title;
+    private Map<Integer, AtomicInteger> data;
 
-    public GatherYearHistogram(List<Song> samePatternSongs, String title) {
+    public YearHistogram(List<Song> samePatternSongs, String title) {
         this.samePatternSongs = samePatternSongs;
         this.title = title;
-    }
-
-    public GatherYearHistogram(List<Song> samePatternSongs) {
-        this(samePatternSongs, "");
     }
 
     public void print() {
         drawHistogram(createSongYearDataset(createYearHistogram(samePatternSongs, new YearExtractor())), title);
     }
+
 
     private CategoryDataset createSongYearDataset(Map<Integer, AtomicInteger> histogramData) {
         Map<Integer, AtomicInteger> histogram = new TreeMap<>(histogramData);
@@ -62,7 +60,31 @@ public class GatherYearHistogram {
                 histogram.get(year).incrementAndGet();
             }
         });
-        return histogram;
+
+        return useYearBuckets(histogram);
+    }
+
+    private Map<Integer, AtomicInteger> useYearBuckets(Map<Integer, AtomicInteger> histogram) {
+        Map<Integer, AtomicInteger> bucketted = new HashMap<>();
+        int startYear = 1890;
+        int endYear = 1990;
+        int incrementStep = 5;
+        for (int i = startYear; i <= endYear; i += incrementStep) {
+            bucketted.put(i, new AtomicInteger(0));
+        }
+        int bucket = 0;
+        for (Map.Entry<Integer, AtomicInteger> entry : histogram.entrySet()) {
+            bucket = startYear + ((entry.getKey() - startYear) / incrementStep) * incrementStep;
+            AtomicInteger atomicInteger = bucketted.get(bucket);
+            if (atomicInteger != null) {
+                atomicInteger.addAndGet(entry.getValue().intValue());
+            } else {
+                System.out.println("NPE at bucket " + bucket);
+            }
+        }
+        System.out.println("Bucketed: " + bucketted);
+
+        return bucketted;
     }
 
     private void drawHistogram(CategoryDataset dataset, String title) {

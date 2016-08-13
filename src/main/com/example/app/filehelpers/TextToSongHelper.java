@@ -8,7 +8,8 @@ import java.util.List;
 
 public class TextToSongHelper {
 
-    public static List<Song> getSongs(FileReader sfReader) throws IOException {
+    public static List<Song> getSongs(String path) throws IOException {
+        FileReader sfReader = new FileReader(path);
         int ignored = 0;
         List<Song> songs = new ArrayList<>();
         LocationFileReader locFR = new LocationFileReader();
